@@ -1,7 +1,10 @@
 import { WordId } from '../value-objects/WordId';
+import { DomainEvent } from '../events/DomainEvent';
 import { Meaning, Phonetic } from './types';
 
 export class Word {
+  private readonly events: DomainEvent[] = [];
+
   private constructor(
     private readonly id: WordId,
     private readonly word: string,
@@ -85,6 +88,14 @@ export class Word {
 
   getCreatedAt(): Date {
     return this.createdAt;
+  }
+
+  getEvents(): DomainEvent[] {
+    return [...this.events];
+  }
+
+  clearEvents(): void {
+    this.events.length = 0;
   }
 
   toJSON(): any {

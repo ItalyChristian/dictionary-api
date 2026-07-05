@@ -4,10 +4,15 @@ import { EventBusPort } from '../../core/ports/event-bus/EventBusPort';
 import { DomainEvent } from '../../core/domain/events/DomainEvent';
 import { LoggerPort } from '../../core/ports/logger/LoggerPort';
 
+interface EventSubscription {
+  handler: (event: any) => Promise<void>;
+  queue: string;
+}
+
 export class RabbitMQEventBus implements EventBusPort {
   private connection!: ChannelModel;
   private channel!: Channel;
-  private handlers: Map<string, Array<(event: any) => Promise<void>>> = new Map();
+  private subscriptions: Map<string, Map<string, EventSubscription>> = new Map();
   private readonly exchangeName = 'domain_events';
 
   constructor(
@@ -60,15 +65,10 @@ export class RabbitMQEventBus implements EventBusPort {
     eventName: string,
     handler: (event: T) => Promise<void>
   ): Promise<void> {
-    if (!this.handlers.has(eventName)) {
-      this.handlers.set(eventName, []);
-    }
-    this.handlers.get(eventName)!.push(handler);
-
     const queue = await this.channel.assertQueue('', { exclusive: true });
     await this.channel.bindQueue(queue.queue, this.exchangeName, eventName);
 
-    await this.channel.consume(queue.queue, async (msg: any) => {
+    const { consumerTag } = await this.channel.consume(queue.queue, async (msg: any) => {
       if (msg) {
         try {
           const event = JSON.parse(msg.content.toString());
@@ -83,12 +83,46 @@ export class RabbitMQEventBus implements EventBusPort {
       }
     });
 
-    this.logger.info(`Subscribed to event: ${eventName}`);
+    if (!this.subscriptions.has(eventName)) {
+      this.subscriptions.set(eventName, new Map());
+    }
+    this.subscriptions.get(eventName)!.set(consumerTag, {
+      handler,
+      queue: queue.queue
+    });
+
+    this.logger.info(`Subscribed to event: ${eventName}`, {
+      handlerId: consumerTag
+    });
   }
 
-  async unsubscribe(_eventName: string, _handlerId: string): Promise<void> {
-    // Implementação depende de como queremos gerenciar
-    // Poderíamos ter IDs nos handlers
+  async unsubscribe(eventName: string, handlerId: string): Promise<void> {
+    const eventSubscriptions = this.subscriptions.get(eventName);
+    const subscription = eventSubscriptions?.get(handlerId);
+
+    if (!subscription) {
+      this.logger.warn(
+        `No subscription found for event ${eventName} with handler ${handlerId}`
+      );
+      return;
+    }
+
+    try {
+      await this.channel.cancel(handlerId);
+      await this.channel.deleteQueue(subscription.queue);
+
+      eventSubscriptions!.delete(handlerId);
+      if (eventSubscriptions!.size === 0) {
+        this.subscriptions.delete(eventName);
+      }
+
+      this.logger.info(`Unsubscribed from event: ${eventName}`, {
+        handlerId
+      });
+    } catch (error) {
+      this.logger.error(`Error unsubscribing from event ${eventName}:`, error);
+      throw error;
+    }
   }
 
   async close(): Promise<void> {

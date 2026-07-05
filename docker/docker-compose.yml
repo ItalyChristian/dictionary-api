@@ -1,0 +1,85 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: dictionary-postgres
+    environment:
+      POSTGRES_USER: dictionary
+      POSTGRES_PASSWORD: dictionary123
+      POSTGRES_DB: dictionary
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - dictionary-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dictionary"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: dictionary-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - dictionary-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: dictionary-rabbitmq
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    ports:
+      - "5672:5672"
+      - "15672:15672" 
+    networks:
+      - dictionary-network
+    healthcheck:
+      test: ["CMD", "rabbitmqctl", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ..
+      dockerfile: docker/dockerfile
+    container_name: dictionary-api
+    ports:
+      - "3333:3333"
+    environment:
+      DATABASE_URL: postgresql://dictionary:dictionary123@postgres:5432/dictionary
+      REDIS_URL: redis://redis:6379
+      RABBITMQ_URL: amqp://guest:guest@rabbitmq:5672
+      JWT_SECRET: ${JWT_SECRET:-super-secret-key}
+      PORT: 3333
+      NODE_ENV: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    volumes:
+      - ../src:/app/src
+      - ../scripts:/app/scripts
+      - ../package.json:/app/package.json
+    networks:
+      - dictionary-network
+    command: sh -c "npm install && npm run dev"
+
+networks:
+  dictionary-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

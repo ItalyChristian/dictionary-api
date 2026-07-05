@@ -102,6 +102,10 @@ export class User {
     return this.email.getValue();
   }
 
+  getPassword(): string {
+    return this.password.getValue();
+  }
+
   getCreatedAt(): Date {
     return this.createdAt;
   }

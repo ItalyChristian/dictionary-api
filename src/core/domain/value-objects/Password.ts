@@ -16,6 +16,10 @@ export class Password {
     return new Password(plainPassword, false);
   }
 
+  static fromHash(hashedPassword: string): Password {
+    return new Password(hashedPassword, true);
+  }
+
   async hash(): Promise<Password> {
     if (this.isHashed) {
       return this;

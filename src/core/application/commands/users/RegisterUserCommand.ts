@@ -5,6 +5,7 @@ export class RegisterUserCommand implements Command {
   public readonly occurredOn: Date;
 
   constructor(
+    public readonly name: string,
     public readonly email: string,
     public readonly password: string
   ) {

@@ -20,7 +20,14 @@ async function buildServer() {
   const fastify = Fastify({
     logger: true,
     trustProxy: true,
-    requestIdHeader: 'x-request-id'
+    requestIdHeader: 'x-request-id',
+    ajv: {
+      // `example` is an OpenAPI/Swagger annotation keyword, not JSON Schema.
+      // Register it so Ajv's strict mode doesn't reject the docs schemas.
+      customOptions: {
+        keywords: ['example']
+      }
+    }
   });
 
   await fastify.register(swagger, {
@@ -79,8 +86,9 @@ async function buildServer() {
 
   fastify.get('/', async () => ({
     name: 'Dictionary API',
-    version: '1.0.0',
-    documentation: '/docs'
+    version: '1.1.0',
+    documentation: '/docs',
+    message: 'English Dictionary',
   }));
 
   return fastify;

@@ -21,6 +21,7 @@ export class PostgresUserRepository implements UserRepository {
 
     return User.reconstitute(
       result[0].id,
+      result[0].name,
       result[0].email,
       result[0].password,
       favorites.map((favorite: { wordId: string }) => favorite.wordId),
@@ -44,6 +45,7 @@ export class PostgresUserRepository implements UserRepository {
 
     return User.reconstitute(
       result[0].id,
+      result[0].name,
       result[0].email,
       result[0].password,
       favorites.map((favorite: { wordId: string }) => favorite.wordId),
@@ -57,6 +59,7 @@ export class PostgresUserRepository implements UserRepository {
         .insert(users)
         .values({
           id: user.getId(),
+          name: user.getName(),
           email: user.getEmail(),
           password: user.getPassword(),
           createdAt: user.getCreatedAt()
@@ -64,6 +67,7 @@ export class PostgresUserRepository implements UserRepository {
         .onConflictDoUpdate({
           target: users.id,
           set: {
+            name: user.getName(),
             email: user.getEmail(),
             password: user.getPassword()
           }

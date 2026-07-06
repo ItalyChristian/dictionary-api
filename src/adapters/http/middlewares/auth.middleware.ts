@@ -12,13 +12,15 @@ export async function authMiddleware(
 ): Promise<void> {
   const authHeader = request.headers.authorization;
 
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (!authHeader || authHeader.trim().length === 0) {
     return reply
       .status(401)
       .send({ message: 'Missing or invalid authorization header' });
   }
 
-  const token = authHeader.slice('Bearer '.length).trim();
+  const token = authHeader.startsWith('Bearer ')
+    ? authHeader.slice('Bearer '.length).trim()
+    : authHeader.trim();
   const secret = process.env.JWT_SECRET;
 
   if (!secret) {

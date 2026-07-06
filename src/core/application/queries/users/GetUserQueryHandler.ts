@@ -18,6 +18,7 @@ export class GetUserQueryHandler
 
     return {
       id: user.getId(),
+      name: user.getName(),
       email: user.getEmail(),
       favorites: user.getFavorites().map((wordId) => wordId.getValue()),
       createdAt: user.getCreatedAt()

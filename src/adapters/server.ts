@@ -86,8 +86,9 @@ async function buildServer() {
 
   fastify.get('/', async () => ({
     name: 'Dictionary API',
-    version: '1.0.0',
-    documentation: '/docs'
+    version: '1.1.0',
+    documentation: '/docs',
+    message: 'English Dictionary',
   }));
 
   return fastify;

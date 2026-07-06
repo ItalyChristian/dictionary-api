@@ -4,6 +4,7 @@ import { Word } from '../../core/domain/entities/Word';
 import { db } from '../database/connection.js';
 import { wordHistory, words } from '../database/drizzle-schema.js';
 import { desc, eq } from 'drizzle-orm';
+import { count } from 'drizzle-orm/sql';
 
 type WordRow = typeof words.$inferSelect;
 type HistoryRow = typeof wordHistory.$inferSelect;
@@ -18,7 +19,13 @@ export class PostgresHistoryRepository implements HistoryRepository {
     });
   }
 
-  async findByUser(userId: string, limit = 20): Promise<HistoryEntry[]> {
+  async findByUser(
+    userId: string,
+    page = 1,
+    limit = 20
+  ): Promise<{ entries: HistoryEntry[]; total: number }> {
+    const offset = (page - 1) * limit;
+
     const rows = await db
       .select({
         history: wordHistory,
@@ -28,9 +35,15 @@ export class PostgresHistoryRepository implements HistoryRepository {
       .leftJoin(words, eq(words.id, wordHistory.wordId))
       .where(eq(wordHistory.userId, userId))
       .orderBy(desc(wordHistory.viewedAt))
-      .limit(limit);
+      .limit(limit)
+      .offset(offset);
 
-    return rows.map(
+    const [totals] = await db
+      .select({ value: count() })
+      .from(wordHistory)
+      .where(eq(wordHistory.userId, userId));
+
+    const entries = rows.map(
       (row: { history: HistoryRow; word: WordRow | null }) => ({
         userId: row.history.userId,
         wordId: row.history.wordId,
@@ -38,6 +51,8 @@ export class PostgresHistoryRepository implements HistoryRepository {
         viewedAt: row.history.viewedAt
       })
     );
+
+    return { entries, total: totals?.value ?? 0 };
   }
 
   async getRecentWords(userId: string, limit: number): Promise<string[]> {

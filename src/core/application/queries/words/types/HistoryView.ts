@@ -1,5 +1,13 @@
 export interface HistoryView {
   word: string;
-  details: any;
-  viewedAt: Date;
+  added: Date;
+}
+
+export interface PaginatedHistoryView {
+  results: HistoryView[];
+  totalDocs: number;
+  page: number;
+  totalPages: number;
+  hasNext: boolean;
+  hasPrev: boolean;
 }

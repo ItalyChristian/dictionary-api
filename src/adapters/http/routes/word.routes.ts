@@ -7,6 +7,28 @@ export async function wordRoutes(
   fastify: FastifyInstance,
   controller: WordController
 ) {
+  fastify.get<{
+    Querystring: { search?: string; limit?: string; cursor?: string };
+  }>(
+    '/entries/en',
+    {
+      schema: {
+        tags: ['Word'],
+        security: [{ bearerAuth: [] }],
+        querystring: {
+          type: 'object',
+          properties: {
+            search: { type: 'string' },
+            limit: { type: 'string' },
+            cursor: { type: 'string' }
+          }
+        }
+      },
+      preHandler: [authMiddleware, rateLimitMiddleware({ limit: 100, window: 60000 })]
+    },
+    controller.listWords.bind(controller)
+  );
+
   fastify.get<{ Params: { word: string } }>(
     '/entries/en/:word',
     {

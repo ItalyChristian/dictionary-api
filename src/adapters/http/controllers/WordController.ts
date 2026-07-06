@@ -41,8 +41,8 @@ export class WordController {
       const command = new FavoriteWordCommand(userId, request.params.word);
       
       await this.commandBus.execute(command);
-      
-      return reply.status(204).send();
+
+      return reply.status(200).send({ message: 'success' });
     } catch (error) {
       return reply.status(400).send({
         message: error instanceof Error ? error.message : 'Error favoriting word'
@@ -56,8 +56,8 @@ export class WordController {
       const command = new UnfavoriteWordCommand(userId, request.params.word);
       
       await this.commandBus.execute(command);
-      
-      return reply.status(204).send();
+
+      return reply.status(200).send({ message: 'success' });
     } catch (error) {
       return reply.status(400).send({
         message: error instanceof Error ? error.message : 'Error unfavoriting word'

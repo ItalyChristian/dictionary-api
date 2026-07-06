@@ -1,6 +1,6 @@
 import { WordId } from '../value-objects/WordId';
-import { DomainEvent } from '../events/DomainEvent';
-import { Meaning, Phonetic } from './types';
+import { DomainEvent } from '../events/types/DomainEvent';
+import { Meaning, Phonetic } from './types/types';
 
 export class Word {
   private readonly events: DomainEvent[] = [];

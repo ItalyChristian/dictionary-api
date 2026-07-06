@@ -1,12 +1,7 @@
 import { QueryHandler } from '../interfaces/QueryHandler';
 import { GetHistoryQuery } from './GetHistoryQuery';
 import { HistoryRepository } from '../../../domain/repositories/HistoryRepository';
-
-export interface HistoryView {
-  word: string;
-  details: any;
-  viewedAt: Date;
-}
+import { HistoryView } from './types/HistoryView';
 
 export class GetHistoryQueryHandler
   implements QueryHandler<GetHistoryQuery, { history: HistoryView[] }>

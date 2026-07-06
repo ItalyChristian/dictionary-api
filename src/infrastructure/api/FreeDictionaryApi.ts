@@ -2,7 +2,7 @@ import {
   DictionaryApiPort,
   WordDetails
 } from '../../core/ports/api/DictionaryApiPort';
-import { FreeDictionaryEntry } from './types';
+import { FreeDictionaryEntry } from './types/FreeDictionaryEntry';
 
 export class FreeDictionaryApi implements DictionaryApiPort {
   /**

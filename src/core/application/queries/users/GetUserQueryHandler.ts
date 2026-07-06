@@ -1,13 +1,7 @@
 import { QueryHandler } from '../interfaces/QueryHandler';
 import { GetUserQuery } from './GetUserQuery';
 import { UserRepository } from '../../../domain/repositories/UserRepository';
-
-export interface UserView {
-  id: string;
-  email: string;
-  favorites: string[];
-  createdAt: Date;
-}
+import { UserView } from './types/UserView';
 
 export class GetUserQueryHandler
   implements QueryHandler<GetUserQuery, UserView>

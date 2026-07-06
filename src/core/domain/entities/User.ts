@@ -1,7 +1,7 @@
 import { Email } from '../value-objects/Email';
 import { Password } from '../value-objects/Password';
 import { WordId } from '../value-objects/WordId';
-import { DomainEvent } from '../events/DomainEvent';
+import { DomainEvent } from '../events/types/DomainEvent';
 import { UserRegisteredEvent } from '../events/UserRegisteredEvent';
 import { WordFavoritedEvent } from '../events/WordFavoritedEvent';
 import { WordUnfavoritedEvent } from '../events/WordUnfavoritedEvent';

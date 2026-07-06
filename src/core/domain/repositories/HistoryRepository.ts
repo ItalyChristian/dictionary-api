@@ -1,11 +1,5 @@
 import { Word } from '../entities/Word';
-
-export interface HistoryEntry {
-  userId: string;
-  wordId: string;
-  word: Word;
-  viewedAt: Date;
-}
+import { HistoryEntry } from './types/HistoryEntry';
 
 export interface HistoryRepository {
   addEntry(userId: string, wordId: string, word: Word): Promise<void>;

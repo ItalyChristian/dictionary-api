@@ -1,4 +1,4 @@
-import { DomainEvent } from './DomainEvent';
+import { DomainEvent } from './types/DomainEvent';
 
 export class WordFavoritedEvent implements DomainEvent {
   public readonly eventId: string;

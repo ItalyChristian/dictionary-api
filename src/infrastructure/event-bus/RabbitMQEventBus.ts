@@ -1,7 +1,7 @@
 import amqp from 'amqplib';
 import type { Channel, ChannelModel } from 'amqplib';
 import { EventBusPort } from '../../core/ports/event-bus/EventBusPort';
-import { DomainEvent } from '../../core/domain/events/DomainEvent';
+import { DomainEvent } from '../../core/domain/events/types/DomainEvent';
 import { LoggerPort } from '../../core/ports/logger/LoggerPort';
 
 interface EventSubscription {

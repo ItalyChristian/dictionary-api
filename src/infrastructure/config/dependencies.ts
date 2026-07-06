@@ -124,7 +124,7 @@ export class DIContainer {
 
     queryBus.register(
       'GetFavoritesQuery',
-      new GetFavoritesQueryHandler(userRepository, wordRepository)
+      new GetFavoritesQueryHandler(userRepository)
     );
 
     queryBus.register(

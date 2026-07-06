@@ -34,7 +34,7 @@ export async function wordRoutes(
     controller.unfavoriteWord.bind(controller)
   );
 
-  fastify.get(
+  fastify.get<{ Querystring: { page?: number; limit?: number } }>(
     '/user/me/favorites',
     {
       schema: { tags: ['User'], security: [{ bearerAuth: [] }] },

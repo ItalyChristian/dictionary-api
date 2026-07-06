@@ -1,4 +1,8 @@
+import { PaginatedResult } from '@shared/types/PaginatedResult';
+
 export interface FavoriteView {
   word: string;
-  details: any;
+  added: Date;
 }
+
+export type PaginatedFavoriteView = PaginatedResult<FavoriteView>;

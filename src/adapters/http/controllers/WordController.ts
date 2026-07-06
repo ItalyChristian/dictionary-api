@@ -5,6 +5,7 @@ import { FavoriteWordCommand } from '../../../core/application/commands/words/Fa
 import { UnfavoriteWordCommand } from '../../../core/application/commands/words/UnfavoriteWordCommand';
 import { GetWordQuery } from '../../../core/application/queries/words/GetWordQuery';
 import { GetFavoritesQuery } from '../../../core/application/queries/words/GetFavoritesQuery';
+import { PaginatedFavoriteView } from '../../../core/application/queries/words/types/FavoriteView';
 
 export class WordController {
   constructor(
@@ -65,13 +66,21 @@ export class WordController {
     }
   }
 
-  async getFavorites(request: FastifyRequest, reply: FastifyReply) {
+  async getFavorites(
+    request: FastifyRequest<{ Querystring: { page?: number; limit?: number } }>,
+    reply: FastifyReply
+  ) {
     try {
       const userId = (request as any).user.id;
-      const query = new GetFavoritesQuery(userId);
-      
-      const favorites = await this.queryBus.execute(query);
-      
+      const page = Number(request.query.page ?? 1);
+      const limit = Number(request.query.limit ?? 20);
+      const query = new GetFavoritesQuery(userId, page, limit);
+
+      const favorites = await this.queryBus.execute<
+        GetFavoritesQuery,
+        PaginatedFavoriteView
+      >(query);
+
       return reply.send(favorites);
     } catch (error) {
       return reply.status(400).send({

@@ -2,6 +2,7 @@ import { QueryHandler } from '../interfaces/QueryHandler';
 import { GetHistoryQuery } from './GetHistoryQuery';
 import { HistoryRepository } from '../../../domain/repositories/HistoryRepository';
 import { PaginatedHistoryView } from './types/HistoryView';
+import { buildPaginatedResult } from '@shared/types/PaginatedResult';
 
 export class GetHistoryQueryHandler
   implements QueryHandler<GetHistoryQuery, PaginatedHistoryView>
@@ -19,18 +20,10 @@ export class GetHistoryQueryHandler
 
     const results = entries.map((entry) => ({
       word: entry.word.getWord(),
-      added: entry.viewedAt
+      added: entry.viewedAt,
+      viewedAt: entry.viewedAt
     }));
 
-    const totalPages = Math.max(1, Math.ceil(total / query.limit));
-
-    return {
-      results,
-      totalDocs: total,
-      page: query.page,
-      totalPages,
-      hasNext: query.page < totalPages,
-      hasPrev: query.page > 1
-    };
+    return buildPaginatedResult(results, total, query.page, query.limit);
   }
 }

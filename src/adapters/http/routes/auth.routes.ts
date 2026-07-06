@@ -35,7 +35,13 @@ export async function authRoutes(
           properties: {
             name: { type: 'string', example: 'User 1' },
             email: { type: 'string', format: 'email', example: 'example@email.com' },
-            password: { type: 'string', minLength: 6, example: 'test123' }
+            password: {
+              type: 'string',
+              minLength: 6,
+              description:
+                'Mínimo de 6 caracteres, com ao menos um número e um caractere especial',
+              example: 'Test@123'
+            }
           }
         },
         response: {
@@ -59,7 +65,13 @@ export async function authRoutes(
           required: ['email', 'password'],
           properties: {
             email: { type: 'string', format: 'email', example: 'example@email.com' },
-            password: { type: 'string', minLength: 6, example: 'test123' }
+            password: {
+              type: 'string',
+              minLength: 6,
+              description:
+                'Mínimo de 6 caracteres, com ao menos um número e um caractere especial',
+              example: 'Test@123'
+            }
           }
         },
         response: {

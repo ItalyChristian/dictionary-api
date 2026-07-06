@@ -13,6 +13,12 @@ export class Password {
     if (plainPassword.length < 6) {
       throw new Error('Password must be at least 6 characters');
     }
+    if (!/[0-9]/.test(plainPassword)) {
+      throw new Error('Password must contain at least one number');
+    }
+    if (!/[^A-Za-z0-9]/.test(plainPassword)) {
+      throw new Error('Password must contain at least one special character');
+    }
     return new Password(plainPassword, false);
   }
 

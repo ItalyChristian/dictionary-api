@@ -28,12 +28,17 @@ async function buildServer() {
       info: {
         title: 'Dictionary API',
         description: 'API com Hexagonal Architecture + DDD + Event-Driven',
-        version: '1.0.0'
+        version: '1.1.0'
       },
       host: 'localhost:3333',
       schemes: ['http'],
       consumes: ['application/json'],
       produces: ['application/json'],
+      tags: [
+        { name: 'Auth', description: 'Autenticação (registro e login)' },
+        { name: 'User', description: 'Perfil e histórico do usuário' },
+        { name: 'Word', description: 'Consulta e favoritos de palavras' }
+      ],
       securityDefinitions: {
         bearerAuth: {
           type: 'apiKey',

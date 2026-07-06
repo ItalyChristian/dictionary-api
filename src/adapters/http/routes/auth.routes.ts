@@ -8,7 +8,7 @@ const authResponseSchema = {
   properties: {
     id: { type: 'string', example: 'f3a106sa65dv53ab2c1380acef' },
     name: { type: 'string', example: 'User 1' },
-    token: { type: 'string', example: 'Bearer JWT.Token' }
+    token: { type: 'string', example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.JWT.Token' }
   }
 };
 
@@ -39,7 +39,7 @@ export async function authRoutes(
           }
         },
         response: {
-          201: authResponseSchema,
+          200: authResponseSchema,
           400: errorResponseSchema
         }
       },

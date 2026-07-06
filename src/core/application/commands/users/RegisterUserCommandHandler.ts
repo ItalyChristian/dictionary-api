@@ -54,7 +54,7 @@ export class RegisterUserCommandHandler
     return {
       id: user.getId(),
       name: user.getName(),
-      token: `Bearer ${token}`
+      token
     };
   }
 }

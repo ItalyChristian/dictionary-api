@@ -33,7 +33,7 @@ export class LoginUserCommandHandler
     return {
       id: user.getId(),
       name: user.getName(),
-      token: `Bearer ${token}`
+      token
     };
   }
 }

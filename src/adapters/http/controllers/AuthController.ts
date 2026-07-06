@@ -21,7 +21,7 @@ export class AuthController {
         RegisterResult
       >(command);
 
-      return reply.status(201).send(result);
+      return reply.status(200).send(result);
     } catch (error) {
       return reply.status(400).send({
         message: error instanceof Error ? error.message : 'Error registering user'
@@ -38,7 +38,7 @@ export class AuthController {
         command
       );
 
-      return reply.send(result);
+      return reply.status(200).send(result);
     } catch (error) {
       return reply.status(401).send({
         message: error instanceof Error ? error.message : 'Error logging in'

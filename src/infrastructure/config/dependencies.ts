@@ -22,6 +22,7 @@ import { FavoriteWordCommandHandler } from '../../core/application/commands/word
 import { UnfavoriteWordCommandHandler } from '../../core/application/commands/words/UnfavoriteWordCommandHandler';
 
 import { GetWordQueryHandler } from '../../core/application/queries/words/GetWordQueryHandler';
+import { GetWordsQueryHandler } from '../../core/application/queries/words/GetWordsQueryHandler';
 import { GetUserQueryHandler } from '../../core/application/queries/users/GetUserQueryHandler';
 import { GetFavoritesQueryHandler } from '../../core/application/queries/words/GetFavoritesQueryHandler';
 import { GetHistoryQueryHandler } from '../../core/application/queries/words/GetHistoryQueryHandler';
@@ -115,6 +116,11 @@ export class DIContainer {
         dictionaryApi,
         eventBus
       )
+    );
+
+    queryBus.register(
+      'GetWordsQuery',
+      new GetWordsQueryHandler(wordRepository, cache)
     );
 
     queryBus.register(

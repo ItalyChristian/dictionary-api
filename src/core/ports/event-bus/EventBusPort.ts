@@ -7,5 +7,4 @@ export interface EventBusPort {
     eventName: string,
     handler: (event: T) => Promise<void>
   ): Promise<void>;
-  unsubscribe(eventName: string, handlerId: string): Promise<void>;
 }

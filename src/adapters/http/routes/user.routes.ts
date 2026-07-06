@@ -9,14 +9,16 @@ export async function userRoutes(
   fastify.get(
     '/user/me',
     {
+      schema: { tags: ['User'], security: [{ bearerAuth: [] }] },
       preHandler: [authMiddleware]
     },
     controller.getProfile.bind(controller)
   );
 
-  fastify.get<{ Querystring: { limit?: number } }>(
+  fastify.get<{ Querystring: { page?: number; limit?: number } }>(
     '/user/me/history',
     {
+      schema: { tags: ['User'], security: [{ bearerAuth: [] }] },
       preHandler: [authMiddleware]
     },
     controller.getHistory.bind(controller)

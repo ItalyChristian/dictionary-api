@@ -3,7 +3,7 @@ import { QueryBus } from '../../../core/application/queries/QueryBus';
 import { GetUserQuery } from '../../../core/application/queries/users/GetUserQuery';
 import { GetHistoryQuery } from '../../../core/application/queries/words/GetHistoryQuery';
 import { UserView } from '../../../core/application/queries/users/types/UserView';
-import { HistoryView } from '../../../core/application/queries/words/types/HistoryView';
+import { PaginatedHistoryView } from '../../../core/application/queries/words/types/HistoryView';
 
 export class UserController {
   constructor(private readonly queryBus: QueryBus) {}
@@ -24,17 +24,18 @@ export class UserController {
   }
 
   async getHistory(
-    request: FastifyRequest<{ Querystring: { limit?: number } }>,
+    request: FastifyRequest<{ Querystring: { page?: number; limit?: number } }>,
     reply: FastifyReply
   ) {
     try {
       const userId = (request as any).user.id;
+      const page = Number(request.query.page ?? 1);
       const limit = Number(request.query.limit ?? 20);
-      const query = new GetHistoryQuery(userId, limit);
+      const query = new GetHistoryQuery(userId, page, limit);
 
       const result = await this.queryBus.execute<
         GetHistoryQuery,
-        { history: HistoryView[] }
+        PaginatedHistoryView
       >(query);
 
       return reply.send(result);

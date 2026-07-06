@@ -37,15 +37,25 @@ export class GetWordQueryHandler
     const cached = await this.cache.get<any>(cacheKey);
     if (cached) {
       source = 'cache';
-      
+
+      const word = await this.wordRepository.findByWord(query.word);
+      if (word) {
+        word.incrementViews();
+        await this.wordRepository.save(word);
+
+        cached.stats = {
+          favorites: word.getFavoriteCount(),
+          views: word.getViewCount()
+        };
+        await this.cache.set(cacheKey, cached, 3600);
+      }
+
       if (query.userId) {
         const user = await this.userRepository.findById(query.userId);
         if (user) {
           isFavorite = user.isFavorite(WordId.create(query.word));
         }
-      }
 
-      if (query.userId) {
         await this.eventBus.publish(
           new WordViewedEvent(query.word, query.userId, query.word, source)
         );

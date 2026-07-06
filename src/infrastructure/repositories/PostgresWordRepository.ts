@@ -1,9 +1,14 @@
-import { WordRepository } from '../../core/domain/repositories/WordRepository';
+import {
+  WordRepository,
+  WordSearchParams,
+  WordSearchResult
+} from '../../core/domain/repositories/WordRepository';
 import { Word } from '../../core/domain/entities/Word';
 import { WordId } from '../../core/domain/value-objects/WordId';
 import { db } from '../database/connection.js';
 import { words } from '../database/drizzle-schema.js';
 import { desc, eq } from 'drizzle-orm';
+import { and, asc, count, gt, ilike, lt } from 'drizzle-orm/sql';
 
 type WordRow = typeof words.$inferSelect;
 
@@ -96,6 +101,58 @@ export class PostgresWordRepository implements WordRepository {
       .limit(limit);
 
     return result.map((row: WordRow) => this.toEntity(row));
+  }
+
+  async searchPaginated(params: WordSearchParams): Promise<WordSearchResult> {
+    const { search, limit, cursorWord, direction } = params;
+
+    const searchFilter = search
+      ? ilike(words.word, `${search.toLowerCase().trim()}%`)
+      : undefined;
+
+    const totalRes = await db
+      .select({ value: count() })
+      .from(words)
+      .where(searchFilter);
+    const totalDocs = Number(totalRes[0]?.value ?? 0);
+
+    const isPrev = direction === 'prev' && Boolean(cursorWord);
+
+    const cursorFilter = cursorWord
+      ? isPrev
+        ? lt(words.word, cursorWord)
+        : gt(words.word, cursorWord)
+      : undefined;
+
+    const pageFilter =
+      searchFilter && cursorFilter
+        ? and(searchFilter, cursorFilter)
+        : (searchFilter ?? cursorFilter);
+
+    const rows = await db
+      .select({ word: words.word })
+      .from(words)
+      .where(pageFilter)
+      .orderBy(isPrev ? desc(words.word) : asc(words.word))
+      .limit(limit + 1);
+
+    const hasExtra = rows.length > limit;
+    const pageRows = hasExtra ? rows.slice(0, limit) : rows;
+
+    const ordered = isPrev ? pageRows.reverse() : pageRows;
+    const wordList = ordered.map((row: { word: string }) => row.word);
+
+    const hasNext = isPrev ? true : hasExtra;
+    const hasPrev = isPrev ? hasExtra : Boolean(cursorWord);
+
+    return {
+      words: wordList,
+      totalDocs,
+      hasNext: wordList.length === 0 ? false : hasNext,
+      hasPrev: wordList.length === 0 ? false : hasPrev,
+      firstWord: wordList[0] ?? null,
+      lastWord: wordList[wordList.length - 1] ?? null
+    };
   }
 
   async exists(word: string): Promise<boolean> {

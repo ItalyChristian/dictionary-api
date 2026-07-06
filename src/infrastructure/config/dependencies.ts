@@ -22,6 +22,7 @@ import { FavoriteWordCommandHandler } from '../../core/application/commands/word
 import { UnfavoriteWordCommandHandler } from '../../core/application/commands/words/UnfavoriteWordCommandHandler';
 
 import { GetWordQueryHandler } from '../../core/application/queries/words/GetWordQueryHandler';
+import { GetWordsQueryHandler } from '../../core/application/queries/words/GetWordsQueryHandler';
 import { GetUserQueryHandler } from '../../core/application/queries/users/GetUserQueryHandler';
 import { GetFavoritesQueryHandler } from '../../core/application/queries/words/GetFavoritesQueryHandler';
 import { GetHistoryQueryHandler } from '../../core/application/queries/words/GetHistoryQueryHandler';
@@ -88,7 +89,7 @@ export class DIContainer {
 
     commandBus.register(
       'RegisterUserCommand',
-      new RegisterUserCommandHandler(userRepository, eventBus)
+      new RegisterUserCommandHandler(userRepository, eventBus, process.env.JWT_SECRET!)
     );
 
     commandBus.register(
@@ -118,13 +119,18 @@ export class DIContainer {
     );
 
     queryBus.register(
+      'GetWordsQuery',
+      new GetWordsQueryHandler(wordRepository, cache)
+    );
+
+    queryBus.register(
       'GetUserQuery',
       new GetUserQueryHandler(userRepository)
     );
 
     queryBus.register(
       'GetFavoritesQuery',
-      new GetFavoritesQueryHandler(userRepository, wordRepository)
+      new GetFavoritesQueryHandler(userRepository)
     );
 
     queryBus.register(
@@ -132,14 +138,16 @@ export class DIContainer {
       new GetHistoryQueryHandler(historyRepository)
     );
 
+    const onWordViewedHandler = new OnWordViewedHandler(historyRepository);
     await eventBus.subscribe(
       'word.viewed',
-      new OnWordViewedHandler(historyRepository).handle.bind(this)
+      onWordViewedHandler.handle.bind(onWordViewedHandler)
     );
 
+    const onWordFavoritedHandler = new OnWordFavoritedHandler(logger, cache);
     await eventBus.subscribe(
       'word.favorited',
-      new OnWordFavoritedHandler(logger, cache).handle.bind(this)
+      onWordFavoritedHandler.handle.bind(onWordFavoritedHandler)
     );
 
     logger.info('Dependency Injection container setup complete');

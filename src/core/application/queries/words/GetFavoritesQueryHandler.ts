@@ -1,35 +1,28 @@
 import { QueryHandler } from '../interfaces/QueryHandler';
 import { GetFavoritesQuery } from './GetFavoritesQuery';
 import { UserRepository } from '../../../domain/repositories/UserRepository';
-import { WordRepository } from '../../../domain/repositories/WordRepository';
-import { FavoriteView } from './types/FavoriteView';
+import { PaginatedFavoriteView } from './types/FavoriteView';
+import { buildPaginatedResult } from '@shared/types/PaginatedResult';
 
 export class GetFavoritesQueryHandler
-  implements QueryHandler<GetFavoritesQuery, { favorites: FavoriteView[] }>
+  implements QueryHandler<GetFavoritesQuery, PaginatedFavoriteView>
 {
   constructor(
-    private readonly userRepository: UserRepository,
-    private readonly wordRepository: WordRepository
+    private readonly userRepository: UserRepository
   ) {}
 
-  async handle(query: GetFavoritesQuery): Promise<{ favorites: FavoriteView[] }> {
-    const user = await this.userRepository.findById(query.userId);
-    if (!user) {
-      throw new Error('User not found');
-    }
-
-    const favoriteIds = user.getFavorites();
-
-    const favorites = await Promise.all(
-      favoriteIds.map(async (wordId) => {
-        const word = await this.wordRepository.findById(wordId);
-        return {
-          word: wordId.getValue(),
-          details: word ? word.toJSON() : null
-        };
-      })
+  async handle(query: GetFavoritesQuery): Promise<PaginatedFavoriteView> {
+    const { entries, total } = await this.userRepository.findFavoritesByUser(
+      query.userId,
+      query.page,
+      query.limit
     );
 
-    return { favorites };
+    const results = entries.map((entry) => ({
+      word: entry.wordId,
+      added: entry.favoritedAt
+    }));
+
+    return buildPaginatedResult(results, total, query.page, query.limit);
   }
 }

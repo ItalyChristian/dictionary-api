@@ -1,8 +1,12 @@
 import { UserRepository } from '../../core/domain/repositories/UserRepository';
+import { FavoriteEntry } from '../../core/domain/repositories/types/FavoriteEntry';
 import { User } from '../../core/domain/entities/User';
 import { db } from '../database/connection.js';
 import { users, userFavorites } from '../database/drizzle-schema.js';
-import { and, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
+import { count } from 'drizzle-orm/sql';
+
+type FavoriteRow = typeof userFavorites.$inferSelect;
 
 export class PostgresUserRepository implements UserRepository {
   async findById(id: string): Promise<User | null> {
@@ -21,6 +25,7 @@ export class PostgresUserRepository implements UserRepository {
 
     return User.reconstitute(
       result[0].id,
+      result[0].name,
       result[0].email,
       result[0].password,
       favorites.map((favorite: { wordId: string }) => favorite.wordId),
@@ -44,6 +49,7 @@ export class PostgresUserRepository implements UserRepository {
 
     return User.reconstitute(
       result[0].id,
+      result[0].name,
       result[0].email,
       result[0].password,
       favorites.map((favorite: { wordId: string }) => favorite.wordId),
@@ -57,6 +63,7 @@ export class PostgresUserRepository implements UserRepository {
         .insert(users)
         .values({
           id: user.getId(),
+          name: user.getName(),
           email: user.getEmail(),
           password: user.getPassword(),
           createdAt: user.getCreatedAt()
@@ -64,6 +71,7 @@ export class PostgresUserRepository implements UserRepository {
         .onConflictDoUpdate({
           target: users.id,
           set: {
+            name: user.getName(),
             email: user.getEmail(),
             password: user.getPassword()
           }
@@ -106,6 +114,35 @@ export class PostgresUserRepository implements UserRepository {
 
   async delete(id: string): Promise<void> {
     await db.delete(users).where(eq(users.id, id));
+  }
+
+  async findFavoritesByUser(
+    userId: string,
+    page = 1,
+    limit = 20
+  ): Promise<{ entries: FavoriteEntry[]; total: number }> {
+    const offset = (page - 1) * limit;
+
+    const rows = await db
+      .select()
+      .from(userFavorites)
+      .where(eq(userFavorites.userId, userId))
+      .orderBy(desc(userFavorites.favoritedAt))
+      .limit(limit)
+      .offset(offset);
+
+    const [totals] = await db
+      .select({ value: count() })
+      .from(userFavorites)
+      .where(eq(userFavorites.userId, userId));
+
+    const entries = rows.map((row: FavoriteRow) => ({
+      userId: row.userId,
+      wordId: row.wordId,
+      favoritedAt: row.favoritedAt
+    }));
+
+    return { entries, total: totals?.value ?? 0 };
   }
 
   async exists(email: string): Promise<boolean> {

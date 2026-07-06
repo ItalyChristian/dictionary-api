@@ -1,5 +1,8 @@
+import { PaginatedResult } from '@shared/types/PaginatedResult';
+
 export interface HistoryView {
   word: string;
-  details: any;
-  viewedAt: Date;
+  added: Date;
 }
+
+export type PaginatedHistoryView = PaginatedResult<HistoryView>;

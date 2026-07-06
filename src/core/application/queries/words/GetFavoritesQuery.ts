@@ -5,7 +5,9 @@ export class GetFavoritesQuery implements Query {
   public readonly occurredOn: Date;
 
   constructor(
-    public readonly userId: string
+    public readonly userId: string,
+    public readonly page: number = 1,
+    public readonly limit: number = 20
   ) {
     this.queryId = crypto.randomUUID();
     this.occurredOn = new Date();

@@ -1,20 +1,20 @@
 import Fastify from 'fastify';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
-import { DIContainer } from '../infrastructure/config/dependencies';
-import { authRoutes } from './http/routes/auth.routes';
-import { wordRoutes } from './http/routes/word.routes';
-import { userRoutes } from './http/routes/user.routes';
-import { AuthController } from './http/controllers/AuthController';
-import { WordController } from './http/controllers/WordController';
-import { UserController } from './http/controllers/UserController';
-import { errorHandler } from './http/middlewares/error-handler.middleware';
-import { loggingMiddleware } from './http/middlewares/logging.middleware';
-import { metricsMiddleware } from './http/middlewares/metrics.middleware';
-import { configureRateLimiter } from './http/middlewares/rate-limit.middleware';
-import { CommandBus } from '../core/application/commands/CommandBus';
-import { QueryBus } from '../core/application/queries/QueryBus';
-import { CachePort } from '../core/ports/cache/CachePort';
+import { DIContainer } from '../infrastructure/config/dependencies.ts';
+import { authRoutes } from './http/routes/auth.routes.ts';
+import { wordRoutes } from './http/routes/word.routes.ts';
+import { userRoutes } from './http/routes/user.routes.ts';
+import { AuthController } from './http/controllers/AuthController.ts';
+import { WordController } from './http/controllers/WordController.ts';
+import { UserController } from './http/controllers/UserController.ts';
+import { errorHandler } from './http/middlewares/error-handler.middleware.ts';
+import { loggingMiddleware } from './http/middlewares/logging.middleware.ts';
+import { metricsMiddleware } from './http/middlewares/metrics.middleware.ts';
+import { configureRateLimiter } from './http/middlewares/rate-limit.middleware.ts';
+import { CommandBus } from '../core/application/commands/CommandBus.ts';
+import { QueryBus } from '../core/application/queries/QueryBus.ts';
+import { CachePort } from '../core/ports/cache/CachePort.ts';
 
 async function buildServer() {
   const fastify = Fastify({

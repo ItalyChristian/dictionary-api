@@ -3,11 +3,7 @@ import { CommandBus } from '../../../core/application/commands/CommandBus';
 import { RegisterUserCommand } from '../../../core/application/commands/users/RegisterUserCommand';
 import { LoginUserCommand } from '../../../core/application/commands/users/LoginUserCommand';
 import { LoginResult } from '../../../core/application/commands/users/LoginUserCommandHandler';
-
-interface AuthBody {
-  email: string;
-  password: string;
-}
+import { AuthBody } from '../types/AuthBody';
 
 export class AuthController {
   constructor(private readonly commandBus: CommandBus) {}

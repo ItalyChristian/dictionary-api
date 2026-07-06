@@ -2,11 +2,7 @@ import jwt from 'jsonwebtoken';
 import { CommandHandler } from '../interfaces/CommandHandler';
 import { LoginUserCommand } from './LoginUserCommand';
 import { UserRepository } from '../../../domain/repositories/UserRepository';
-
-export interface LoginResult {
-  token: string;
-  userId: string;
-}
+import { LoginResult } from './types';
 
 export class LoginUserCommandHandler
   implements CommandHandler<LoginUserCommand, LoginResult>
@@ -34,6 +30,10 @@ export class LoginUserCommandHandler
       { expiresIn: this.jwtExpiresInSeconds }
     );
 
-    return { token, userId: user.getId() };
+    return {
+      id: user.getId(),
+      name: user.getName(),
+      token: `Bearer ${token}`
+    };
   }
 }

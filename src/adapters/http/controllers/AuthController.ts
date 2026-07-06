@@ -1,24 +1,24 @@
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { CommandBus } from '../../../core/application/commands/CommandBus';
 import { RegisterUserCommand } from '../../../core/application/commands/users/RegisterUserCommand';
+import { RegisterResult, LoginResult } from '../../../core/application/commands/users/types';
 import { LoginUserCommand } from '../../../core/application/commands/users/LoginUserCommand';
-import { LoginResult } from '../../../core/application/commands/users/LoginUserCommandHandler';
-import { AuthBody } from '../types/AuthBody';
+import { AuthBody, RegisterBody } from '../types/AuthBody';
 
 export class AuthController {
   constructor(private readonly commandBus: CommandBus) {}
 
   async register(
-    request: FastifyRequest<{ Body: AuthBody }>,
+    request: FastifyRequest<{ Body: RegisterBody }>,
     reply: FastifyReply
   ) {
     try {
-      const { email, password } = request.body;
-      const command = new RegisterUserCommand(email, password);
+      const { name, email, password } = request.body;
+      const command = new RegisterUserCommand(name, email, password);
 
       const result = await this.commandBus.execute<
         RegisterUserCommand,
-        { userId: string }
+        RegisterResult
       >(command);
 
       return reply.status(201).send(result);

@@ -11,27 +11,35 @@ export class User {
 
   private constructor(
     private readonly id: string,
+    private name: string,
     private email: Email,
     private password: Password,
     private favorites: Set<string>,
     private createdAt: Date
   ) {}
 
-  static create(email: string, plainPassword: string): User {
+  static create(name: string, email: string, plainPassword: string): User {
+    const trimmedName = name.trim();
+    if (trimmedName.length === 0) {
+      throw new Error('Name must not be empty');
+    }
+
     const user = new User(
       crypto.randomUUID(),
+      trimmedName,
       Email.create(email),
       Password.create(plainPassword),
       new Set(),
       new Date()
     );
-    
-    user.raiseEvent(new UserRegisteredEvent(user.id, email));
+
+    user.raiseEvent(new UserRegisteredEvent(user.id, trimmedName, email));
     return user;
   }
 
   static reconstitute(
     id: string,
+    name: string,
     email: string,
     hashedPassword: string,
     favorites: string[],
@@ -39,6 +47,7 @@ export class User {
   ): User {
     return new User(
       id,
+      name,
       Email.create(email),
       Password.fromHash(hashedPassword),
       new Set(favorites.map(f => WordId.create(f).getValue())),
@@ -96,6 +105,10 @@ export class User {
 
   getId(): string {
     return this.id;
+  }
+
+  getName(): string {
+    return this.name;
   }
 
   getEmail(): string {

@@ -88,7 +88,7 @@ export class DIContainer {
 
     commandBus.register(
       'RegisterUserCommand',
-      new RegisterUserCommandHandler(userRepository, eventBus)
+      new RegisterUserCommandHandler(userRepository, eventBus, process.env.JWT_SECRET!)
     );
 
     commandBus.register(

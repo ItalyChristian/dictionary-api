@@ -9,6 +9,7 @@ export async function userRoutes(
   fastify.get(
     '/user/me',
     {
+      schema: { tags: ['User'] },
       preHandler: [authMiddleware]
     },
     controller.getProfile.bind(controller)
@@ -17,6 +18,7 @@ export async function userRoutes(
   fastify.get<{ Querystring: { limit?: number } }>(
     '/user/me/history',
     {
+      schema: { tags: ['User'] },
       preHandler: [authMiddleware]
     },
     controller.getHistory.bind(controller)

@@ -10,6 +10,7 @@ export async function wordRoutes(
   fastify.get<{ Params: { word: string } }>(
     '/entries/en/:word',
     {
+      schema: { tags: ['Word'] },
       preHandler: [rateLimitMiddleware({ limit: 100, window: 60000 })]
     },
     controller.getWord.bind(controller)
@@ -18,6 +19,7 @@ export async function wordRoutes(
   fastify.post<{ Params: { word: string } }>(
     '/entries/en/:word/favorite',
     {
+      schema: { tags: ['word'] },
       preHandler: [authMiddleware, rateLimitMiddleware({ limit: 30, window: 60000 })]
     },
     controller.favoriteWord.bind(controller)
@@ -26,6 +28,7 @@ export async function wordRoutes(
   fastify.delete<{ Params: { word: string } }>(
     '/entries/en/:word/unfavorite',
     {
+      schema: { tags: ['word'] },
       preHandler: [authMiddleware, rateLimitMiddleware({ limit: 30, window: 60000 })]
     },
     controller.unfavoriteWord.bind(controller)
@@ -34,6 +37,7 @@ export async function wordRoutes(
   fastify.get(
     '/user/me/favorites',
     {
+      schema: { tags: ['word'] },
       preHandler: [authMiddleware]
     },
     controller.getFavorites.bind(controller)

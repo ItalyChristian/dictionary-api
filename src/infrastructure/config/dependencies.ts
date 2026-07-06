@@ -132,14 +132,16 @@ export class DIContainer {
       new GetHistoryQueryHandler(historyRepository)
     );
 
+    const onWordViewedHandler = new OnWordViewedHandler(historyRepository);
     await eventBus.subscribe(
       'word.viewed',
-      new OnWordViewedHandler(historyRepository).handle.bind(this)
+      onWordViewedHandler.handle.bind(onWordViewedHandler)
     );
 
+    const onWordFavoritedHandler = new OnWordFavoritedHandler(logger, cache);
     await eventBus.subscribe(
       'word.favorited',
-      new OnWordFavoritedHandler(logger, cache).handle.bind(this)
+      onWordFavoritedHandler.handle.bind(onWordFavoritedHandler)
     );
 
     logger.info('Dependency Injection container setup complete');

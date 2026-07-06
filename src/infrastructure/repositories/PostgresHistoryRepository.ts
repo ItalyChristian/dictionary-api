@@ -1,7 +1,5 @@
-import {
-  HistoryEntry,
-  HistoryRepository
-} from '../../core/domain/repositories/HistoryRepository';
+import { HistoryRepository } from '../../core/domain/repositories/HistoryRepository';
+import { HistoryEntry } from '../../core/domain/repositories/types/HistoryEntry';
 import { Word } from '../../core/domain/entities/Word';
 import { db } from '../database/connection.js';
 import { wordHistory, words } from '../database/drizzle-schema.js';

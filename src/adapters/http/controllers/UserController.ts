@@ -2,8 +2,8 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { QueryBus } from '../../../core/application/queries/QueryBus';
 import { GetUserQuery } from '../../../core/application/queries/users/GetUserQuery';
 import { GetHistoryQuery } from '../../../core/application/queries/words/GetHistoryQuery';
-import { UserView } from '../../../core/application/queries/users/GetUserQueryHandler';
-import { HistoryView } from '../../../core/application/queries/words/GetHistoryQueryHandler';
+import { UserView } from '../../../core/application/queries/users/types/UserView';
+import { HistoryView } from '../../../core/application/queries/words/types/HistoryView';
 
 export class UserController {
   constructor(private readonly queryBus: QueryBus) {}

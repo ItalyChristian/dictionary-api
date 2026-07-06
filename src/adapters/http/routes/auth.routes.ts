@@ -1,11 +1,7 @@
 import { FastifyInstance } from 'fastify';
 import { AuthController } from '../controllers/AuthController';
 import { rateLimitMiddleware } from '../middlewares/rate-limit.middleware';
-
-interface AuthBody {
-  email: string;
-  password: string;
-}
+import { AuthBody } from '../types/AuthBody';
 
 export async function authRoutes(
   fastify: FastifyInstance,

@@ -2,11 +2,7 @@ import { QueryHandler } from '../interfaces/QueryHandler';
 import { GetFavoritesQuery } from './GetFavoritesQuery';
 import { UserRepository } from '../../../domain/repositories/UserRepository';
 import { WordRepository } from '../../../domain/repositories/WordRepository';
-
-export interface FavoriteView {
-  word: string;
-  details: any;
-}
+import { FavoriteView } from './types/FavoriteView';
 
 export class GetFavoritesQueryHandler
   implements QueryHandler<GetFavoritesQuery, { favorites: FavoriteView[] }>

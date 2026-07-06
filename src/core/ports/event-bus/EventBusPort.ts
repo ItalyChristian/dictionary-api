@@ -1,4 +1,4 @@
-import { DomainEvent } from '../../domain/events/DomainEvent';
+import { DomainEvent } from '../../domain/events/types/DomainEvent';
 
 export interface EventBusPort {
   publish<T extends DomainEvent>(event: T): Promise<void>;

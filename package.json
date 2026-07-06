@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development node --env-file .env --watch src/server.ts",
+    "dev": "cross-env NODE_ENV=development tsx watch --env-file .env src/adapters/server.ts",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:studio": "drizzle-kit studio",
@@ -21,6 +21,7 @@
     "@types/amqplib": "^0.10.8",
     "amqplib": "^2.0.1",
     "argon2": "^0.44.0",
+    "cross-env": "^10.1.0",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
     "fastify": "^5.9.0",

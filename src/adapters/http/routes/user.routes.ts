@@ -15,7 +15,7 @@ export async function userRoutes(
     controller.getProfile.bind(controller)
   );
 
-  fastify.get<{ Querystring: { limit?: number } }>(
+  fastify.get<{ Querystring: { page?: number; limit?: number } }>(
     '/user/me/history',
     {
       schema: { tags: ['User'], security: [{ bearerAuth: [] }] },

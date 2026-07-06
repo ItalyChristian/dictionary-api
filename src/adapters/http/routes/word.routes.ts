@@ -10,8 +10,8 @@ export async function wordRoutes(
   fastify.get<{ Params: { word: string } }>(
     '/entries/en/:word',
     {
-      schema: { tags: ['Word'] },
-      preHandler: [rateLimitMiddleware({ limit: 100, window: 60000 })]
+      schema: { tags: ['Word'], security: [{ bearerAuth: [] }] },
+      preHandler: [authMiddleware, rateLimitMiddleware({ limit: 100, window: 60000 })]
     },
     controller.getWord.bind(controller)
   );
@@ -34,7 +34,7 @@ export async function wordRoutes(
     controller.unfavoriteWord.bind(controller)
   );
 
-  fastify.get(
+  fastify.get<{ Querystring: { page?: number; limit?: number } }>(
     '/user/me/favorites',
     {
       schema: { tags: ['User'], security: [{ bearerAuth: [] }] },

@@ -51,6 +51,15 @@ export class Word {
     this.viewCount++;
   }
 
+  enrich(meanings: Meaning[], phonetics: Phonetic[]): void {
+    this.meanings = meanings;
+    this.phonetics = phonetics;
+  }
+
+  hasDetails(): boolean {
+    return this.meanings.length > 0;
+  }
+
   incrementFavorites(): void {
     this.favoriteCount++;
   }

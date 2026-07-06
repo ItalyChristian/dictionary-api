@@ -10,7 +10,11 @@ import { WordId } from '../../../domain/value-objects/WordId';
 import { Word } from '@core/domain/entities/Word';
 
 export class GetWordQueryHandler
-  implements QueryHandler<GetWordQuery, { word: string; details: any; isFavorite: boolean }>
+  implements
+    QueryHandler<
+      GetWordQuery,
+      { word: string; details: any; isFavorite: boolean; fromCache: boolean }
+    >
 {
   constructor(
     private readonly wordRepository: WordRepository,
@@ -24,6 +28,7 @@ export class GetWordQueryHandler
     word: string;
     details: any;
     isFavorite: boolean;
+    fromCache: boolean;
   }> {
     let isFavorite = false;
     let source: 'cache' | 'database' | 'api' = 'api';
@@ -49,36 +54,38 @@ export class GetWordQueryHandler
       return {
         word: query.word,
         details: cached,
-        isFavorite
+        isFavorite,
+        fromCache: true
       };
     }
 
     let word = await this.wordRepository.findByWord(query.word);
-    if (word) {
+
+    if (word && word.hasDetails()) {
       source = 'database';
       word.incrementViews();
       await this.wordRepository.save(word);
-      
+
       await this.cache.set(cacheKey, word.toJSON(), 3600);
-      
-      if (query.userId) {
-        const user = await this.userRepository.findById(query.userId);
-        if (user) {
-          isFavorite = user.isFavorite(word.getId());
-        }
-      }
     } else {
       const apiData = await this.dictionaryApi.fetchWordDetails(query.word);
-      
-      word = Word.create(
-        query.word,
-        apiData.meanings,
-        apiData.phonetics
-      );
+
+      if (word) {
+        word.enrich(apiData.meanings, apiData.phonetics);
+      } else {
+        word = Word.create(query.word, apiData.meanings, apiData.phonetics);
+      }
       word.incrementViews();
-      
+
       await this.wordRepository.save(word);
       await this.cache.set(cacheKey, word.toJSON(), 3600);
+    }
+
+    if (query.userId) {
+      const user = await this.userRepository.findById(query.userId);
+      if (user) {
+        isFavorite = user.isFavorite(word.getId());
+      }
     }
 
     if (query.userId) {
@@ -90,7 +97,8 @@ export class GetWordQueryHandler
     return {
       word: query.word,
       details: word.toJSON(),
-      isFavorite
+      isFavorite,
+      fromCache: false
     };
   }
 }

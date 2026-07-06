@@ -21,11 +21,11 @@ export class WordController {
 
       const result = await this.queryBus.execute<
         GetWordQuery,
-        { word: string; details: any; isFavorite: boolean }
+        { word: string; details: any; isFavorite: boolean; fromCache: boolean }
       >(query);
 
       return reply
-        .header('x-cache', result.details.fromCache ? 'HIT' : 'MISS')
+        .header('x-cache', result.fromCache ? 'HIT' : 'MISS')
         .header('x-response-time', Date.now() - startTime)
         .send(result);
     } catch (error) {

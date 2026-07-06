@@ -20,8 +20,7 @@ export class GetHistoryQueryHandler
 
     const results = entries.map((entry) => ({
       word: entry.word.getWord(),
-      added: entry.viewedAt,
-      viewedAt: entry.viewedAt
+      added: entry.viewedAt
     }));
 
     return buildPaginatedResult(results, total, query.page, query.limit);

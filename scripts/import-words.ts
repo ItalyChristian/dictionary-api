@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { DIContainer } from '../src/infrastructure/config/dependencies';
 import { Word } from '../src/core/domain/entities/Word';
 import { WordRepository } from '../src/core/domain/repositories/WordRepository';

@@ -4,4 +4,6 @@ export interface CachePort {
   delete(key: string): Promise<void>;
   invalidatePattern(pattern: string): Promise<void>;
   getTTL(key: string): Promise<number | null>;
+
+  increment(key: string, windowSeconds: number): Promise<number>;
 }

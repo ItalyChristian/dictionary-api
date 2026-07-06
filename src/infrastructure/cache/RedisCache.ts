@@ -6,7 +6,7 @@ export class RedisCache implements CachePort {
   private readonly client: Redis;
 
   constructor(
-    private readonly url: string,
+    url: string,
     private readonly logger: LoggerPort
   ) {
     this.client = new Redis(url);
@@ -52,6 +52,20 @@ export class RedisCache implements CachePort {
       }
     } catch (error) {
       this.logger.error(`Error invalidating pattern ${pattern}:`, error);
+    }
+  }
+
+  async increment(key: string, windowSeconds: number): Promise<number> {
+    try {
+      const count = await this.client.incr(key);
+      if (count === 1) {
+        await this.client.expire(key, windowSeconds);
+      }
+      return count;
+    } catch (error) {
+      this.logger.error(`Error incrementing key ${key}:`, error);
+
+      return 0;
     }
   }
 

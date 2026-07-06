@@ -19,7 +19,7 @@ export async function authRoutes(
   fastify.post<{ Body: AuthBody }>(
     '/auth/login',
     {
-      schema: { tags: ['auth'] },
+      schema: { tags: ['Auth'] },
       preHandler: [rateLimitMiddleware({ limit: 10, window: 60000 })]
     },
     controller.login.bind(controller)

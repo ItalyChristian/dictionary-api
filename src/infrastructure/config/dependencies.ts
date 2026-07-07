@@ -33,6 +33,7 @@ import { OnWordFavoritedHandler } from '../../core/application/event-handlers/On
 export class DIContainer {
   private static instance: DIContainer;
   private container: Map<string, any> = new Map();
+  private initialized = false;
 
   private constructor() {}
 
@@ -56,6 +57,10 @@ export class DIContainer {
   }
 
   async setup(): Promise<void> {
+    if (this.initialized) {
+      return;
+    }
+
     const logger: LoggerPort = new PinoLogger();
     this.register('logger', logger);
 
@@ -150,6 +155,7 @@ export class DIContainer {
       onWordFavoritedHandler.handle.bind(onWordFavoritedHandler)
     );
 
+    this.initialized = true;
     logger.info('Dependency Injection container setup complete');
   }
 

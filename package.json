@@ -13,7 +13,7 @@
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
     "import-words": "tsx scripts/import-words.ts",
-    "build": "tsc"
+    "build": "tsc -p tsconfig.build.json"
   },
   "keywords": [],
   "author": "",

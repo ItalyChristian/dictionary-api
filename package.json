@@ -14,7 +14,7 @@
     "test:coverage": "vitest run --coverage",
     "import-words": "tsx scripts/import-words.ts",
     "build": "tsc -p tsconfig.build.json",
-    "start": "tsx src/adapters/server.ts"
+    "start": "tsx dist/adapters/server.js"
   },
   "keywords": [],
   "author": "",

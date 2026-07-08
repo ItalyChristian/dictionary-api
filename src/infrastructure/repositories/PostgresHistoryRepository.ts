@@ -11,12 +11,21 @@ type HistoryRow = typeof wordHistory.$inferSelect;
 
 export class PostgresHistoryRepository implements HistoryRepository {
   async addEntry(userId: string, wordId: string, word: Word): Promise<void> {
-    await db.insert(wordHistory).values({
-      userId,
-      wordId,
-      word: word.getWord(),
-      viewedAt: new Date()
-    });
+    await db
+      .insert(wordHistory)
+      .values({
+        userId,
+        wordId,
+        word: word.getWord(),
+        viewedAt: new Date()
+      })
+      .onConflictDoUpdate({
+        target: [wordHistory.userId, wordHistory.wordId],
+        set: {
+          word: word.getWord(),
+          viewedAt: new Date()
+        }
+      });
   }
 
   async findByUser(

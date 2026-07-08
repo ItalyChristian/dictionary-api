@@ -1,4 +1,5 @@
 import { integer, jsonb, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core';
+import { uniqueIndex } from 'drizzle-orm/pg-core/indexes';
 
 export const users = pgTable('users', {
   id: uuid('id').primaryKey(),
@@ -24,10 +25,18 @@ export const words = pgTable('words', {
   createdAt: timestamp('created_at').notNull()
 });
 
-export const wordHistory = pgTable('word_history', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  userId: uuid('user_id').notNull(),
-  wordId: text('word_id').notNull(),
-  word: text('word').notNull(),
-  viewedAt: timestamp('viewed_at').notNull()
-});
+export const wordHistory = pgTable(
+  'word_history',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    userId: uuid('user_id').notNull(),
+    wordId: text('word_id').notNull(),
+    word: text('word').notNull(),
+    viewedAt: timestamp('viewed_at').notNull()
+  },
+  // `table` is typed as `any`: the extra-config callback param isn't inferred
+  // under this tsconfig (see the uniqueIndex import note above).
+  (table: any) => [
+    uniqueIndex('word_history_user_word_unique').on(table.userId, table.wordId)
+  ]
+);

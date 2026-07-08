@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import jwt from 'jsonwebtoken';
 import { RegisterUserCommandHandler } from '@core/application/commands/users/RegisterUserCommandHandler';
 import { RegisterUserCommand } from '@core/application/commands/users/RegisterUserCommand';

@@ -4,11 +4,13 @@ import {
 } from '../../core/ports/api/DictionaryApiPort';
 import { FreeDictionaryEntry } from './types/FreeDictionaryEntry';
 
+const DEFAULT_BASE_URL = 'https://api.dictionaryapi.dev/api/v2/entries/en';
+
 export class FreeDictionaryApi implements DictionaryApiPort {
   /**
    * @param baseUrl e.g. https://api.dictionaryapi.dev/api/v2/entries/en
    */
-  constructor(private readonly baseUrl: string) {}
+  constructor(private readonly baseUrl?: string) {}
 
   async fetchWordDetails(word: string): Promise<WordDetails> {
     const entries = await this.request(word);
@@ -65,9 +67,8 @@ export class FreeDictionaryApi implements DictionaryApiPort {
   }
 
   private async request(word: string): Promise<FreeDictionaryEntry[]> {
-    const url = `${this.baseUrl.replace(/\/$/, '')}/${encodeURIComponent(
-      word.toLowerCase().trim()
-    )}`;
+    const baseUrl = (this.baseUrl ?? DEFAULT_BASE_URL).replace(/\/$/, '');
+    const url = `${baseUrl}/${encodeURIComponent(word.toLowerCase().trim())}`;
 
     const response = await fetch(url);
 

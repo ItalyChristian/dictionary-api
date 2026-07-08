@@ -8,6 +8,7 @@ export class RabbitMQEventBus implements EventBusPort {
   private connection!: ChannelModel;
   private channel!: Channel;
   private readonly exchangeName = 'domain_events';
+  private readonly subscribedEvents = new Set<string>();
 
   constructor(
     private readonly url: string,
@@ -59,6 +60,13 @@ export class RabbitMQEventBus implements EventBusPort {
     eventName: string,
     handler: (event: T) => Promise<void>
   ): Promise<void> {
+    if (this.subscribedEvents.has(eventName)) {
+      this.logger.warn(`Already subscribed to event: ${eventName}`);
+      return;
+    }
+
+    this.subscribedEvents.add(eventName);
+
     const queue = await this.channel.assertQueue('', { exclusive: true });
     await this.channel.bindQueue(queue.queue, this.exchangeName, eventName);
 

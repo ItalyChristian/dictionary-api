@@ -65,6 +65,15 @@ describe('FreeDictionaryApi', () => {
       expect(details.meanings[0].definitions[0].definition).toBe('A greeting.');
     });
 
+    it('uses the default dictionary URL when no base URL is provided', async () => {
+      const fetchMock = mockFetch({ json: async () => [sampleEntry] });
+      const api = new FreeDictionaryApi(undefined as unknown as string);
+
+      await api.fetchWordDetails('Hello');
+
+      expect(fetchMock).toHaveBeenCalledWith(`${BASE_URL}/hello`);
+    });
+
     it('throws when the word is not found (404 -> empty)', async () => {
       mockFetch({ status: 404, ok: false });
       const api = new FreeDictionaryApi(BASE_URL);

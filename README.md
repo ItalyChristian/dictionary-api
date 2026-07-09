@@ -149,3 +149,5 @@ src/
 ├── infrastructure/       # Implementações: Postgres, Redis, RabbitMQ, Pino, API externa
 └── shared/               # Tipos compartilhados
 ```
+---
+v1.1.0 desenvolvida em 12 horas e 35 minutos (entre os dias 05/07/2026 e 08/07/2026)

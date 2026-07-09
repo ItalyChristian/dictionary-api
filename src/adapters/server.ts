@@ -22,8 +22,6 @@ async function buildServer() {
     trustProxy: true,
     requestIdHeader: 'x-request-id',
     ajv: {
-      // `example` is an OpenAPI/Swagger annotation keyword, not JSON Schema.
-      // Register it so Ajv's strict mode doesn't reject the docs schemas.
       customOptions: {
         keywords: ['example']
       }

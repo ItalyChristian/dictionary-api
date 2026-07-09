@@ -12,7 +12,8 @@
     "test:run": "vitest run",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
-    "import-words": "tsx scripts/import-words.ts"
+    "import-words": "tsx scripts/import-words.ts",
+    "build": "docker build ."
   },
   "keywords": [],
   "author": "",

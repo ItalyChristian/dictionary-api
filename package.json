@@ -12,9 +12,7 @@
     "test:run": "vitest run",
     "test:watch": "vitest watch",
     "test:coverage": "vitest run --coverage",
-    "import-words": "tsx scripts/import-words.ts",
-    "build": "tsc -p tsconfig.json",
-    "start": "tsx src/adapters/server.ts"
+    "import-words": "tsx scripts/import-words.ts"
   },
   "keywords": [],
   "author": "",
